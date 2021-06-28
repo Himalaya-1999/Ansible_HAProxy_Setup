@@ -1,0 +1,37 @@
+---
+ - name: "Setting up the HAProxy Load Balancer Server"
+   hosts: haproxy_server
+   vars:
+           pack: "haproxy"
+   tasks:
+           - name: "Installing HAProxy server"
+             package:
+                     name: "{{ pack }}"
+                     state: present
+
+           - name: "Setting up Configuration file of HAProxy Server"
+             template:
+                     src: /root/Ansible/haproxy.cfg
+                     dest: /etc/haproxy/haproxy.cfg
+
+           - name: "Starting up the HAProxy Services" 
+             service:
+                     name: "{{ pack }}"
+                     state: started
+ - name: "Setting up the Backend Servers"
+   hosts: backend_server
+   vars:
+           pack: "httpd"
+   tasks:
+           - name : "Installing httpd web server"
+             package:
+                     name: "{{ pack }}"
+                     state: present
+           - name: "Copying the WebPages to the Web server"
+             template:
+                     src: /root/Ansible/index.html
+                     dest: /var/www/html/
+           - name: "Starting up the Web Services"
+             service:
+                     name: "{{ pack }}"
+                     state: started
